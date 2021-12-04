@@ -1,0 +1,19 @@
+{
+  "name": "Bean",
+  "symbol": "",
+  "image": "1.png",
+  "properties": {
+    "files": [
+      {
+        "uri": "1.png",
+        "type": "image/png"
+      }
+    ],
+    "creators": [
+      {
+        "address": "Att91HMMCB59uBUoYF2wZwqWaAaT3Ne3xkfzjmqSTLDc",
+        "share": 100
+      }
+    ]
+  }
+}
