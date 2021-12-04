@@ -33,6 +33,7 @@ const CandyMachine = ({ walletAddress }) => {
   // Add these two state properties
   const [isMinting, setIsMinting] = useState(false);
   const [isLoadingMints, setIsLoadingMints] = useState(false);
+
   useEffect(() => {
     getCandyMachineState();
   }, []);
@@ -367,16 +368,20 @@ const CandyMachine = ({ walletAddress }) => {
   return (
     machineStats && (
       <div className="machine-container">
-        {/* Add this at the beginning of our component */}
         {renderDropTimer()}
         <p>{`Items Minted: ${machineStats.itemsRedeemed} / ${machineStats.itemsAvailable}`}</p>
-        <button
-          className="cta-button mint-button"
-          onClick={mintToken}
-          disabled={isMinting}
-        >
-          Mint NFT
-        </button>
+        {/* Check to see if these properties are equal! */}
+        {machineStats.itemsRedeemed === machineStats.itemsAvailable ? (
+          <p className="sub-text">Sold Out 🙊</p>
+        ) : (
+          <button
+            className="cta-button mint-button"
+            onClick={mintToken}
+            disabled={isMinting || !walletAddress}
+          >
+            Mint NFT
+          </button>
+        )}
         {mints.length > 0 && renderMintedItems()}
         {isLoadingMints && <p>LOADING MINTS...</p>}
       </div>
