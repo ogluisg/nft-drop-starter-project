@@ -28,7 +28,13 @@ const MAX_CREATOR_LEN = 32 + 1 + 1;
 const CandyMachine = ({ walletAddress }) => {
   // Actions
 
-  const [machineStats, setMachineStats] = useState(null);
+  const [machineStats, setMachineStats] = useState({
+    itemsAvailable: 0,
+    itemsRedeemed: 0,
+    itemsRemaining: 0,
+    goLiveData: null,
+    goLiveDateTimeString: null,
+  });
   const [mints, setMints] = useState([]);
   // Add these two state properties
   const [isMinting, setIsMinting] = useState(false);
@@ -85,8 +91,11 @@ const CandyMachine = ({ walletAddress }) => {
         console.log("Past Minted NFT", mint);
 
         // Get image URI
-        if (!mints.find((mint) => mint === parse.image)) {
-          setMints((prevState) => [...prevState, parse.image]);
+        if (!mints.find((mint) => mint.image === parse.image)) {
+          setMints((prevState) => [
+            ...prevState,
+            { image: parse.image, mint: mint.mint },
+          ]);
         }
       }
     }
@@ -335,19 +344,29 @@ const CandyMachine = ({ walletAddress }) => {
     });
   };
 
+  console.log(mints, "lmints:");
+
   const renderMintedItems = () => (
     <div className="gif-container">
       <p className="sub-text">Minted Items ✨</p>
       <div className="gif-grid">
-        {mints.map((mint) => (
-          <div className="gif-item" key={mint}>
-            <img src={mint} alt={`Minted NFT ${mint}`} />
+        {mints.map(({ image, mint }) => (
+          <div
+            className="gif-item"
+            key={mint}
+            onClick={() =>
+              window.open(
+                `https://explorer.solana.com/address/${mint}?cluster=devnet`,
+                "blank"
+              )
+            }
+          >
+            <img src={image} alt={`Minted NFT ${mint}`} />
           </div>
         ))}
       </div>
     </div>
   );
-
   // Create render function
   const renderDropTimer = () => {
     // Get the current date and dropDate in a JavaScript Date object
@@ -365,13 +384,15 @@ const CandyMachine = ({ walletAddress }) => {
     return <p>{`Drop Date: ${machineStats.goLiveDateTimeString}`}</p>;
   };
 
+  const { itemsAvailable, itemsRedeemed } = machineStats;
+
+  const soldOut = itemsRedeemed === itemsAvailable;
   return (
     machineStats && (
       <div className="machine-container">
         {renderDropTimer()}
-        <p>{`Items Minted: ${machineStats.itemsRedeemed} / ${machineStats.itemsAvailable}`}</p>
-        {/* Check to see if these properties are equal! */}
-        {machineStats.itemsRedeemed === machineStats.itemsAvailable ? (
+        <p>{`Items Minted: ${itemsRedeemed} / ${itemsAvailable}`}</p>
+        {soldOut ? (
           <p className="sub-text">Sold Out 🙊</p>
         ) : (
           <button
